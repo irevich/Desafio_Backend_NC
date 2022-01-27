@@ -1,0 +1,25 @@
+{
+  "name": "desafio_backend_nc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/irevich/Desafio_Backend_NC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/irevich/Desafio_Backend_NC/issues"
+  },
+  "homepage": "https://github.com/irevich/Desafio_Backend_NC#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "pg": "^8.7.1"
+  }
+}
