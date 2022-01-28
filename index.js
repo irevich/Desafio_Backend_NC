@@ -105,13 +105,13 @@ app.post("/api/transactions",async (req,res)=>{
         return res.status(404).send(generateError("The payable with the current barcode does not exist"));
     }
 
-    //Also we have to check if the current payable has not been paid yet. Otherwise a 400 error is returned
+    //Also we have to check if the current payable has not been paid yet. Otherwise a 409 error is returned
 
     let statusId = await PayableApi.getPayableStatusByBarcode(pgClient,req.body.barcode);
     let paidId = await StatusApi.getIdByName(pgClient,'paid');
 
     if(statusId===paidId){
-        return res.status(400).send(generateError("Payables can not be paid twice"));
+        return res.status(409).send(generateError("Payables can not be paid twice"));
     }
 
     //If it is pending, we have to check if the due date has not passed. Otherwise, a 400 error is returned
