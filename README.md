@@ -189,7 +189,7 @@ This endpoint has two query params (neither of them are mandatory, in case of no
 ##### Answer codes
 
 The possible answer codes are :
-- 200 : In case the respective payables were listed succesfully (Have in mind that this return code does not mean necessarily that a list of payables is returned. For example, if you want all the payables with the service "Light", and there is none of them with that service, the answer code of the API will be 200 because it has made the operation successfully, but an empty list will be returned )
+- 200 : In case the respective payables were listed succesfully (Have in mind that this answer code does not mean necessarily that a list of payables is returned. For example, if you want all the payables with the service "Light", and there is none of them with that service, the answer code of the API will be 200 because it has made the operation successfully, but an empty list will be returned )
 - 400 : In case any of these scenarios has happened
     - The status is invalid
 
@@ -248,7 +248,7 @@ This endpoint has two query params, both mandatory. These are :
 ##### Answer codes
 
 The possible answer codes are :
-- 200 : In case the respective transactions were listed succesfully (Have in mind that this return code does not mean necessarily that a list of transactions is returned. For example, if there is not any transaction that has been made between the dates you have put as parameters, the answer code will be 200 because the operation was made successfully, but an empty list will be returned )
+- 200 : In case the respective transactions were listed succesfully (Have in mind that this answer code does not mean necessarily that a list of transactions is returned. For example, if there is not any transaction that has been made between the dates you have put as parameters, the answer code will be 200 because the operation was made successfully, but an empty list will be returned )
 - 400 : In case any of these scenarios has happened
     - The query params has been ommited or they are not dates (for example, passing startDate as "abc")
     - The start date is equal or after the final date
@@ -277,7 +277,7 @@ Assuming you have the different transactions separated by creation date :
 
 And also assuming that the API is running by default in port 3000
 
-To list the transactions between "1999-02-03" and "2022-03-04"
+- To list the transactions between "1999-02-03" and "2022-03-04"
     - Endpoint : http://localhost:3000/api/transactions?startDate=1999-02-03&finalDate=2022-03-04
         - Query params
             - "startDate" : 1999-02-03
