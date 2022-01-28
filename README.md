@@ -62,8 +62,8 @@ If you do, in the terminal of the IDE where you have opened the project, and in 
 This commands will create the tables in database, and store basic information (like pay methods or payable's status). To see the tables and their fields more in detail, you can go to the file "create_tables_postgres.sql" in the "import_tables_db" folder. The "import_postgres.js" script basically executes that SQL file.
 
 Once you have executed this commands, you will see in the terminal the following messages :
-- Connected to PostgreSQL database
-- Tables created successfully
+- "Connected to PostgreSQL database"
+- "Tables created successfully"
 
 These mean that the operation was succesful
 
@@ -258,6 +258,8 @@ The possible answer codes are :
 - 400 : In case any of these scenarios has happened
     - The query params has been ommited or they are not dates (for example, passing startDate as "abc")
     - The start date is equal or after the final date
+    - Any of the dates does not fulfil the format "YYYY-MM-DD"
+    - The final date is after the current date
 
 ##### Example
 

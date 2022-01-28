@@ -199,12 +199,29 @@ app.get("/api/transactions",async (req,res)=>{
         return res.status(400).send(generateError("The final date should come after the start date"));
     }
 
-    //Then, we ask for the transactions that fulfil this requirement
+    //Then, we check if both dates are in format YYYY-MM-DD. If anyone of these does not fulfil this format, a 400 error is returned
+    let validStartDate = TransactionApi.vaidateTransactionFormatDate(req.query.startDate);
+    let validFinalDate = TransactionApi.vaidateTransactionFormatDate(req.query.finalDate);
 
-    console.log(req.query.startDate);
-    console.log(req.query.finalDate);
+    if(!validStartDate || !validFinalDate){
+        return res.status(400).send(generateError("Start and final dates must be in format YYYY-MM-DDDD"));
+    }
 
-    const transactions = await TransactionApi.getTransactionsBetweenDates(pgClient,req.query.startDate,req.query.finalDate);
+    //Then, we have to check that the final date is not after the actual date. Otherwise a 400 error is returned
+    if(Date.now()<Date.parse(req.query.finalDate)){
+        return res.status(400).send(generateError("The final date should not come after the current date"));
+    }
+    
+    //Finally, we ask for the transactions that fulfil this requirement
+
+    let startDate = new Date(req.query.startDate);
+    let finalDate = new Date(req.query.finalDate);
+
+    //Removing time from the dates
+    let stringStartDate = startDate.toISOString().split("T")[0];
+    let stringFinalDate = finalDate.toISOString().split("T")[0];
+
+    const transactions = await TransactionApi.getTransactionsBetweenDates(pgClient,stringStartDate,stringFinalDate);
     res.send(transactions);
     
 });

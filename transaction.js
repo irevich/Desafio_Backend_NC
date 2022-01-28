@@ -29,6 +29,11 @@ class TransactionApi{
         }
     }
 
+    static vaidateTransactionFormatDate(dateString){
+        let formatRegEx = /^\d{4}-\d{2}-\d{2}$/;
+        return dateString.match(formatRegEx);
+    }
+
     //Validate transaction
     //0- POST /api/transactions
     //1- GET /api/transactions
