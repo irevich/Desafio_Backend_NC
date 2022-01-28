@@ -8,10 +8,11 @@ app.use(cors());
 
 //IMPORTS
 
-const ApiUtils = require('./apiUtils');
+const ApiUtils = require('./api_utils');
 const PayableApi = require('./payable');
 const StatusApi = require('./status');
-const { status } = require('express/lib/response');
+const TransactionApi = require('./transaction');
+const PayMethodApi = require('./pay_method');
 
 
 //BD CONNECTION FUNCTION
@@ -40,7 +41,7 @@ function generateError( string ){
 app.post("/api/payables",async (req,res)=>{
     res.setHeader("content-type", "application/json");
 
-    //Validate
+    //Validate payable
     //If invalid, return 400 - Bad Request
     const {error} = PayableApi.validatePayable(req.body);
 
@@ -66,23 +67,89 @@ app.post("/api/payables",async (req,res)=>{
         res.send();
     }
     catch(e){
-        console.log(e);
         return res.status(409).send(generateError("The payable already exists"));
     }
 
 
 });
 
-app.get("/api/status", async (req,res)=>{
+//Create a transaction
+
+app.post("/api/transactions",async (req,res)=>{
     res.setHeader("content-type", "application/json");
+
+    //Validate transaction
+    //If invalid, return 400 - Bad Request
+    const {error} = TransactionApi.validateTransaction(req.body);
+
+    if(error){
+        //400 Bad Request
+        return res.status(400).send(generateError(error.details[0].message));
+    }
+
+    //Check if pay_method exists
+    let pay_method_id = await PayMethodApi.getIdByName(pgClient,req.body.pay_method);
+
+    //If the pay_method_id returned is -1, the pay_method in the body is invalid
+    if(pay_method_id===-1){
+        //400 Bad Request
+        return res.status(400).send(generateError("The pay method is invalid"));
+    }
+
+    //Then check if the payable with the current barcode exists
+
+    let payable = await PayableApi.getPayableByBarcode(pgClient,req.body.barcode);
+
+    //If the payable is an empty object, the payable with that barcode does not exist, so a 404 error is returned
+    if(Object.keys(payable).length===0){
+        return res.status(404).send(generateError("The payable with the current barcode does not exist"));
+    }
+
+    //Also we have to check if the current payable has not been paid yet. Otherwise a 400 error is returned
+
+    let statusId = await PayableApi.getPayableStatusByBarcode(pgClient,req.body.barcode);
+    let paidId = await StatusApi.getIdByName(pgClient,'paid');
+
+    if(statusId===paidId){
+        return res.status(400).send(generateError("Payables can not be paid twice"));
+    }
+
+    //Lastly, unless pay method is 'cash', we have to check if the card number is not undefined and if it is a number. Otherwise, a 400 error is returned
+    //Also, if it is a number we have to check if its positive or not.
+    let newPayMethodName = req.body.pay_method.trim().toLowerCase();
+    let cardNumber = null;
+    if(newPayMethodName!=='cash'){
+        if(req.body.card_number===undefined){
+            return res.status(400).send(generateError("The card number is required"));
+        }
+        if(isNaN(req.body.card_number)){
+            return res.status(400).send(generateError("The card number must be a number of 16 digits"));
+        }
+        cardNumber = parseInt(req.body.card_number);
+        if(cardNumber<0){
+            return res.status(400).send(generateError("Card number must be positive"));
+        }
+    }
+
+    //If all its ok, the transaction is created
+
     try{
-        const results = await pgClient.query(`SELECT * FROM status`);
-        res.send(results.rows);
+
+        await TransactionApi.insertTransaction(pgClient,req.body.barcode,cardNumber,req.body.payment,Date.now(),pay_method_id);
+
+        //Also, we have to change the payable state to 'paid'
+
+        await PayableApi.changePayableStatus(pgClient,paidId);
+
+        res.status(201); //Created
+        res.send();
     }
     catch(e){
-        console.log(e);
+        return res.status(409).send(generateError("The transaction already exists"));
     }
+
 });
+
 
 //PORT
 const port = process.env.PORT || 3000 ;

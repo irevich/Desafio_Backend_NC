@@ -29,7 +29,7 @@ CREATE TABLE payable(
 
 CREATE TABLE transaction(
   barcode text PRIMARY KEY,
-  card_number integer,
+  card_number bigint,
   payment float,
   creation_date date,
   pay_method integer,

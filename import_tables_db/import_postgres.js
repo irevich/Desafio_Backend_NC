@@ -1,4 +1,4 @@
-const ApiUtils = require('../apiUtils');
+const ApiUtils = require('../api_utils');
 const fs = require('fs');
 
 let pgClient;
