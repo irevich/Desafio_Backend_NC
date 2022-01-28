@@ -61,6 +61,12 @@ If you do, in the terminal of the IDE where you have opened the project, and in 
 
 This commands will create the tables in database, and store basic information (like pay methods or payable's status). To see the tables and their fields more in detail, you can go to the file "create_tables_postgres.sql" in the "import_tables_db" folder. The "import_postgres.js" script basically executes that SQL file.
 
+Once you have executed this commands, you will see in the terminal the following messages :
+- Connected to PostgreSQL database
+- Tables created successfully
+
+These mean that the operation was succesful
+
 Having this done, we have our database ready to use, so now we have to execute our API
 
 ## Backend(API)
