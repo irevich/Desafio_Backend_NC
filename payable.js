@@ -3,7 +3,11 @@ const Joi = require('joi');
 class PayableApi{
 
     static async getPayablesByStatusAndByService(client,status_id,service){
-        let query = "SELECT * FROM payable ";
+        let query = "SELECT due_date, payment, barcode ";
+        if(service===undefined){
+            query = query.concat(", service ");
+        }
+        query = query.concat("FROM payable ");
         let paramsQuantity = 0;
         if(status_id!==undefined){
             query = query.concat(`WHERE status = ${status_id} `);
@@ -21,7 +25,13 @@ class PayableApi{
         query = query.concat("ORDER BY due_date");
 
         try{
-            const results = await client.query(query);
+            let results = await client.query(query);
+
+            //We remove the time of the different due dates
+
+            results.rows.forEach(payable=>{
+                payable.due_date = payable.due_date.toISOString().replace(/T.+/, '') ; 
+            });
             return results.rows;
         }
         catch(e){
