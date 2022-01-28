@@ -16,22 +16,22 @@
         - [POST /api/payables](#post-api-payables)
             -[Goal](#goal-post-api-payables)
             -[Parameters](#parameters-post-api-payables)
-            -[Return values](#return-values-post-api-payables)
+            -[Answer codes](#answer-codes-post-api-payables)
             -[Example](#example-post-api-payables)
         - [POST /api/transactions](#post-api-transactions)
             -[Goal](#goal-post-api-transactions)
             -[Parameters](#parameters-post-api-transactions)
-            -[Return values](#return-values-post-api-transactions)
+            -[Answer codes](#answer-codes-post-api-transactions)
             -[Example](#example-post-api-transactions)
         - [GET /api/payables](#get-api-payables)
             -[Goal](#goal-get-api-payables)
             -[Parameters](#parameters-get-api-payables)
-            -[Return values](#return-values-get-api-payables)
+            -[Answer codes](#answer-codes-get-api-payables)
             -[Example](#example-get-api-payables)
         - [GET /api/transactions](#get-api-transactions)
             -[Goal](#goal-get-api-transactions)
             -[Parameters](#parameters-get-api-transactions)
-            -[Return values](#return-values-get-api-transactions)
+            -[Answer codes](#answer-codes-get-api-transactions)
             -[Example](#example-get-api-transactions)
     - [Postman collection for executing endpoints](#postman-collection-for-executing-endpoints)
 
@@ -46,7 +46,7 @@ To execute the project, first of all you must have Postgres installed locally, a
  - create database ncChallengeDB;
  - \l ( to check if it was created succesfully)
 
-After you have done that, you will have to go to the js file "api_utils", and in the function "getPostgreSQLConnection()", who is responsible of connecting the API with the database that we have just created, you have to put your password, your user, and in case you run postgres in a different port than 5432, you have to change that to.
+After you have done that, you will have to go to the js file "api_utils", and in the function "getPostgreSQLConnection()", who is responsible of connecting the API with the database that we have just created, you have to put your password, your user, and in case you run postgres in a different port than 5432, you have to change that too.
 
 After doing that, we are ready for the next step that is creating the tables and the default data of the database.
 
@@ -79,7 +79,7 @@ Once you have done that, the API will be available at port 3000 by default, or i
 
 If you do not define that enviroment variable, by default the API runs on http://localhost:3000.
 
-Having all the things mentionated in mind, after running the node commands explaines previously, you will see in the console a message that says "Listening to port PORT . . .", where PORT=3000 or the one defined as a enviroment variable like I have just said. This message indicates that the API is in execution and ready to use.
+Having all the things mentionated in mind, after running the node commands explained previously, you will see in the console a message that says "Listening to port PORT . . .", where PORT=3000 or the one defined as a enviroment variable like I have just said. This message indicates that the API is in execution and ready to use.
 
 ### Endpoints
 
@@ -91,7 +91,7 @@ Create a payable
 
 ##### Parameters
 
-Receive this data in the body as a JSON object mandatorily:
+Receives this data in the body as a JSON object mandatorily:
 
 - barcode : A string of 13 characters maximum. Represents the barcode of the payable that is created
 - description : A string of 100 characters maximum. Represents the description of the service that the payable pays.
@@ -100,9 +100,9 @@ Receive this data in the body as a JSON object mandatorily:
 - service : A string that represents the service that is payed in the payable.
 - status : A string that represents the status of the payable. The basic ones are "pending" and "paid".
 
-##### Return values
+##### Answer codes
 
-The possible return values are :
+The possible answer codes are :
 - 201 : In case the payable was created succesfully
 - 400 : In case any of these scenarios has happened
     - Any of the required parameters has been omited, or the data type o length of anyone is wrong (for example a description with a length longer than 100 characters or passing this one as a integer)
@@ -120,7 +120,7 @@ The possible return values are :
     "service" : "Light",
     "status" : "Pending"
 }
-- Return value : 
+- Answer code : 
     201 (created)
 
 #### POST /api/transactions
@@ -144,9 +144,9 @@ not present. So if the pay method is "debit_card" or "credit_card", you must put
 
 The creation date is not passed as a parameter, because is always the current date.
 
-##### Return values
+##### Answer codes
 
-The possible return values are :
+The possible answer codes are :
 - 201 : In case the transaction was created succesfully
 - 400 : In case any of these scenarios has happened
     - Any of the required parameters has been omited, or the data type o length of anyone is wrong (for example a card number with a length different than 16 characters or passing the barcode as a integer)
@@ -169,7 +169,7 @@ Assuming there is a payable with barcode "123ABC" with due date "2022-03-27"
     "pay_method" : "credit_card",
     "card_number" : "1123456789098765"
 }
-- Return value : 
+- Answer code : 
     201 (created)
 
 #### GET /api/payables
@@ -186,9 +186,9 @@ This endpoint has two query params (neither of them are mandatory, in case of no
 - status : The status of the payables you want to list
 - service : The service of the payables you want to list
 
-##### Return values
+##### Answer codes
 
-The possible return values are :
+The possible answer codes are :
 - 200 : In case the respective payables were listed succesfully (Have in mind that this return code does not mean necessarily that a list of payables is returned. For example, if you want all the payables with the service "Light", and there is none of them with that service, the answer code of the API will be 200 because it has made the operation successfully, but an empty list will be returned )
 - 400 : In case any of these scenarios has happened
     - The status is invalid
@@ -202,7 +202,7 @@ Assuming there is only one pending payable with barcode "123ABCD", with service 
         - Query params
             - "status" : pending
             - "service" : undefined
-    - Answer code : 200
+    - Answer code : 200 (OK)
     - Return value :
         [
             {
@@ -217,7 +217,7 @@ Assuming there is only one pending payable with barcode "123ABCD", with service 
         - Query params
             - "status" : pending
             - "service" : Light
-    - Answer code : 200
+    - Answer code : 200 (OK)
     - Return value :
         [
             {
@@ -245,9 +245,9 @@ This endpoint has two query params, both mandatory. These are :
 - startDate : The starting date with format "YYYY-MM-DD"
 - finalDate : The final date with format "YYYY-MM-DD"
 
-##### Return values
+##### Answer codes
 
-The possible return values are :
+The possible answer codes are :
 - 200 : In case the respective transactions were listed succesfully (Have in mind that this return code does not mean necessarily that a list of transactions is returned. For example, if there is not any transaction that has been made between the dates you have put as parameters, the answer code will be 200 because the operation was made successfully, but an empty list will be returned )
 - 400 : In case any of these scenarios has happened
     - The query params has been ommited or they are not dates (for example, passing startDate as "abc")
@@ -282,7 +282,7 @@ To list the transactions between "1999-02-03" and "2022-03-04"
         - Query params
             - "startDate" : 1999-02-03
             - "finalDate" : 2022-03-04
-    - Answer code : 200
+    - Answer code : 200 (OK)
     - Return value :
         [
             {
