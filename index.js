@@ -150,6 +150,33 @@ app.post("/api/transactions",async (req,res)=>{
 
 });
 
+ //List payables (Filter the pending ones and the service with query params)
+
+app.get("/api/payables",async (req,res)=>{
+    res.setHeader("content-type", "application/json");
+
+    //First of all, we check if the query param status is defined and is valid
+
+    let statusId = undefined; 
+
+    if(req.query.status!==undefined){
+        statusId = await StatusApi.getIdByName(pgClient,req.query.status);
+        
+        //If statusId is -1, then the status name passed in the query param is invalid, so a 400 error is returned
+        if(statusId===-1){
+            return res.status(400).send(generateError("The status is invalid"));
+        }
+    }
+
+    //Then, we ask for the respective payables and we return them in the response
+
+    const payables = await PayableApi.getPayablesByStatusAndByService(pgClient,statusId,req.query.service);
+
+    res.send(payables);
+
+
+});
+
 
 //PORT
 const port = process.env.PORT || 3000 ;
