@@ -18,20 +18,20 @@ CREATE TABLE pay_method(
 );
 
 CREATE TABLE payable(
-  barcode integer PRIMARY KEY,
+  barcode text PRIMARY KEY,
   description text,
-  due_date timestamp,
-  payment integer,
+  due_date date,
+  payment float,
   service text,
   status integer,
   FOREIGN KEY (status) REFERENCES status(status_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE transaction(
-  barcode integer PRIMARY KEY,
+  barcode text PRIMARY KEY,
   card_number integer,
-  payment integer,
-  date timestamp,
+  payment float,
+  creation_date date,
   pay_method integer,
   FOREIGN KEY (barcode) REFERENCES payable(barcode) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (pay_method) REFERENCES pay_method(pay_method_id) ON DELETE CASCADE ON UPDATE CASCADE
