@@ -80,7 +80,7 @@ app.post("/api/transactions",async (req,res)=>{
 
     //Validate transaction
     //If invalid, return 400 - Bad Request
-    const {error} = TransactionApi.validateTransaction(req.body);
+    const {error} = TransactionApi.validateTransaction(req.body,0);
 
     if(error){
         //400 Bad Request
@@ -112,6 +112,11 @@ app.post("/api/transactions",async (req,res)=>{
 
     if(statusId===paidId){
         return res.status(400).send(generateError("Payables can not be paid twice"));
+    }
+
+    //If it is pending, we have to check if the due date has not passed. Otherwise, a 400 error is returned
+    if(Date.now()>Date.parse(payable.due_date)){
+        return res.status(400).send(generateError("A payable whose due date has passed can not be paid"));
     }
 
     //Lastly, unless pay method is 'cash', we have to check if the card number is not undefined and if it is a number. Otherwise, a 400 error is returned
@@ -174,7 +179,34 @@ app.get("/api/payables",async (req,res)=>{
 
     res.send(payables);
 
+});
 
+ //List transactions between dates (Query params are required for this endpoint)
+
+app.get("/api/transactions",async (req,res)=>{
+    res.setHeader("content-type", "application/json");
+    
+    //First of all, we validate the query params
+    const {error} = TransactionApi.validateTransaction(req.query,1);
+
+    if(error){
+        //400 Bad Request
+        return res.status(400).send(generateError(error.details[0].message));
+    }
+
+    //Then we have to check that the final date comes after the start date
+    if(Date.parse(req.query.finalDate)<=Date.parse(req.query.startDate)){
+        return res.status(400).send(generateError("The final date should come after the start date"));
+    }
+
+    //Then, we ask for the transactions that fulfil this requirement
+
+    console.log(req.query.startDate);
+    console.log(req.query.finalDate);
+
+    const transactions = await TransactionApi.getTransactionsBetweenDates(pgClient,req.query.startDate,req.query.finalDate);
+    res.send(transactions);
+    
 });
 
 
